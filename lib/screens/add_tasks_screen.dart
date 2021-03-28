@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todoapps/database/database_helper.dart';
+import 'package:todoapps/models/task_models.dart';
 
 class AddTasksScreen extends StatefulWidget {
+  final Function updateTaskList;
+  final Task task;
+
+  AddTasksScreen({required this.updateTaskList, required this.task});
   @override
   _AddTasksScreenState createState() => _AddTasksScreenState();
 }
@@ -24,6 +30,11 @@ class _AddTasksScreenState extends State<AddTasksScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.task != null) {
+      _title = widget.task.title;
+      _date = widget.task.date;
+      _priority = widget.task.priority;
+    }
     _dateController.text = _dateFormatter.format(_date);
   }
 
@@ -39,6 +50,7 @@ class _AddTasksScreenState extends State<AddTasksScreen> {
         initialDate: _date,
         firstDate: DateTime(2000),
         lastDate: DateTime(2100)))!;
+    // ignore: unnecessary_null_comparison
     if (dateTime != null && dateTime != _date) {
       setState(() {
         _date = dateTime;
@@ -53,6 +65,15 @@ class _AddTasksScreenState extends State<AddTasksScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       print("$_title, $_date, $_priority");
+      Task task = Task(title: _title, date: _date, priority: _priority);
+      if (widget.task == null) {
+        task.status = 0;
+        DatabaseHelper.instance.insertTask(task);
+      } else {
+        task.status = widget.task.status;
+        DatabaseHelper.instance.updateTask(task);
+      }
+      widget.updateTaskList();
       Navigator.pop(context);
     }
   }
@@ -203,9 +224,10 @@ class _AddTasksScreenState extends State<AddTasksScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
+                            // ignore: deprecated_member_use
                             RaisedButton(
                               color: Colors.green,
-                              onPressed: () {
+                              onPressed: () async {
                                 print("Added Tasks");
                                 _save();
                               },
@@ -215,6 +237,7 @@ class _AddTasksScreenState extends State<AddTasksScreen> {
                                     color: Colors.white, fontSize: 28.0),
                               ),
                             ),
+                            // ignore: deprecated_member_use
                             RaisedButton(
                               onPressed: () {
                                 print("Updated Tasks");

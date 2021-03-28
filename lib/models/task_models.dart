@@ -1,32 +1,43 @@
-import 'package:flutter/foundation.dart';
-class TaskModel {
+class Task {
   int id;
   String title;
-  DateTime dateTime;
+  DateTime date;
   String priority;
   int status;
-  TaskModel(
-      {required this.title,
-      required this.dateTime,
-      required this.priority,
-      required this.status});
-  TaskModel.withId(
-      {required this.id,
-      required this.dateTime,
-      required this.priority,
-      required this.status, title});
+
+  Task({
+    required this.id,
+    required this.title,
+    required this.date,
+    required this.priority,
+    required this.status,
+  });
+  Task.withId({
+    required this.id,
+    required this.title,
+    required this.date,
+    required this.priority,
+    required this.status,
+  });
+
   Map<String, dynamic> toMap() {
     final map = Map<String, dynamic>();
-    if(id!=null){
-    map['id'] = id;
+    if (id != null) {
+      map['id'] = id;
     }
     map['title'] = title;
-    map['dateTime'] = dateTime.toIso8601String();
+    map['date'] = date.toIso8601String();
     map['priority'] = priority;
     map['status'] = status;
     return map;
   }
-  Factory TaskModel.fromMap(Map<String, dynamic> map){
-    return TaskModel.withId(id: map['id'], title: map['title'], dateTime: DateTime.parse(map['dateTime']), priority: map['priority'], status: map['status']);
+
+  factory Task.fromMap(Map<String, dynamic> map) {
+    return Task.withId(
+        id: map['id'],
+        title: map['title'],
+        date: DateTime.parse(map['date']),
+        priority: map['priority'],
+        status: map['status']);
   }
 }
